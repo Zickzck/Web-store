@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Familiar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Encabezado -->
+  <header class="bg-blue-600 text-white p-4 text-center">
+    <h1 class="text-2xl font-bold">Tienda Familiar</h1>
+    <p class="text-sm">Compra productos de la canasta familiar</p>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="p-6 ">
+    <!-- Lista de productos -->
+    <h2 class="text-xl font-bold mb-4">Productos</h2>
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-6">
+      <div class="bg-white shadow-md rounded-lg p-4 text-center">
+        <img src="https://cdn.icon-icons.com/icons2/1301/PNG/512/if-food-c203-2427849_85703.png" alt="Huevos" class="w-auto h-20 object-contain mx-auto mb-2 rounded">
+        <h3 class="text-lg font-bold">Huevos</h3>
+        <p class="text-gray-700">Precio: $5</p>
+        <button 
+          onclick="agregarAlCarrito('Huevos', 5)" 
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Agregar
+        </button>
+      </div>
+      <div class="bg-white shadow-md rounded-lg p-4 text-center">
+        <img src="https://cdn.icon-icons.com/icons2/468/PNG/512/Milk_44343.png" alt="Leche" class="w-auto h-20 object-contain mx-auto mb-2 rounded">
+        <h3 class="text-lg font-bold">Leche</h3>
+        <p class="text-gray-700">Precio: $2</p>
+        <button 
+          onclick="agregarAlCarrito('Leche', 2)" 
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Agregar
+        </button>
+      </div>
+
+      <div class="bg-white shadow-md rounded-lg p-4 text-center">
+        <img src="https://cdn.icon-icons.com/icons2/1301/PNG/512/if-food-c216-2427860_85697.png" alt="Pan" class="w-22 h-30 object-contain mx-auto mb-2 rounded">
+        <h3 class="text-lg font-bold">Pan</h3>
+        <p class="text-gray-700">Precio: $3</p>
+        <button 
+          onclick="agregarAlCarrito('Pan', 3)" 
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Agregar
+        </button>
+      </div>      
+
+      <div class="bg-white shadow-md rounded-lg p-4 text-center">
+        <h3 class="text-lg font-bold">Mantequilla</h3>
+        <p class="text-gray-700">Precio 5$</p>
+        <button
+          onclick="agregarAlCarrito('Mantequilla', 5)"
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Agregar
+        </button>
+      </div>
+
+      <div class="bg-white shadow-md rounded-lg p-4 text-center">
+        <h3 class="text-lg font-bold">Azucar</h3>
+        <p class="text-gray-700">Precio 3$</p>
+        <button
+          onclick="agregarAlCarrito('Azucar', 3)"
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Agregar
+        </button>
+      </div>
+    </div>
+
+    <!-- Botón para abrir el carrito -->
+    <div class="mt-6">
+      <button 
+        onclick="toggleCarrito()" 
+        class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+        Ver carrito  
+      </button>
+    </div>
+  </main>
+
+  <aside 
+    id="carritoSidebar" 
+    class="fixed top-0 right-0 w-80 bg-white shadow-lg h-full overflow-y-auto transform translate-x-full transition-transform"
+  >
+    <div class="p-4">
+      <h2 class="text-xl font-bold mb-4">Carrito de Compras</h2>
+
+      <ul id="listaCarrito" class="space-y-2 mb-8"></ul>
+      
+      <div class="flex flex-col gap-2">
+        <p id="total" class="font-bold text-lg text-right"></p>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <button 
+            id="comprarCarrito" 
+            onclick="comprarCarrito()" 
+            class="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors"
+          >
+            Comprar
+          </button>
+
+          <button 
+            id="botonCarrito" 
+            onclick="toggleCarrito()" 
+            class="bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors"
+          >
+            Cerrar
+          </button>
+          
+          <button 
+            id="vaciarCarrito" 
+            onclick="vaciarCarrito()" 
+            class="bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors"
+          >
+            Vaciar Carrito
+          </button>
+          
+          <button 
+            id="convertirMoneda" 
+            onclick="convertirACOP()" 
+            class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Convertir a COP
+          </button>
+          <p id="conversionResultado" class="mt-4 text-gray-700 text-lg"></p>
+        </div>
+      </div>
+    </div>
+  </aside>
+ 
+  <!-- JavaScript -->
+  <script>
+    // Inicializar carrito desde localStorage o como objeto vacío
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || {}; 
+
+    // Función para agregar productos al carrito
+    function agregarAlCarrito(producto, precio) {
+      if (carrito[producto]) {
+        carrito[producto].cantidad += 1; // Incrementar la cantidad si ya existe
+      } else {
+        carrito[producto] = { precio, cantidad: 1 }; // Añadir nuevo producto
+      }
+      
+      // Actualizar inmediatamente después de agregar
+      actualizarCarrito(); 
+      guardarCarrito(); // Guardar en localStorage
+    }
+
+    // Función para guardar el carrito en localStorage
+    function guardarCarrito() {
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+    }
+
+    // Mostrar/Ocultar el carrito
+    function toggleCarrito() {
+      const carritoSidebar = document.getElementById('carritoSidebar');
+      if (carritoSidebar.classList.contains('translate-x-full')) {
+        actualizarCarrito(); // Asegurar que se actualice al abrir
+        carritoSidebar.classList.remove('translate-x-full');
+      } else {
+        carritoSidebar.classList.add('translate-x-full');
+      }
+    }
+
+    function vaciarCarrito() {
+      // Vaciar el objeto carrito
+      Object.keys(carrito).forEach(key => delete carrito[key]);
+
+      // Actualizar localStorage
+      localStorage.removeItem('carrito');
+
+      // Actualizar la vista del carrito
+      actualizarCarrito();
+    }
+
+    // Función mejorada para actualizar el carrito
+    function actualizarCarrito() {
+      const listaCarrito = document.getElementById('listaCarrito');
+      const totalCarrito = document.getElementById('total');
+
+      // Limpiar lista antes de agregar
+      listaCarrito.innerHTML = '';
+      let total = 0;
+
+      // Agregar productos al carrito con más detalles
+      Object.entries(carrito).forEach(([producto, { precio, cantidad }]) => {
+        const li = document.createElement('li');
+        li.classList.add(
+          'flex', 
+          'justify-self-auto', 
+          'items-center', 
+          'bg-gray-100', 
+          'p-2', 
+          'rounded'
+        );
+        
+        li.innerHTML = `
+  <div class="flex justify-self-auto items-center bg-white shadow-sm rounded-lg p-3 hover:bg-gray-50 transition-all duration-200">
+    <div class="flex items-center space-x-4">
+      <span class="font-semibold text-gray-800">${producto}</span>
+      <span class="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+        Unidades: ${cantidad}
+      </span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span class="font-medium text-green-600">
+        Subtotal: $${(precio * cantidad).toFixed(2)}
+      </span>
+      <button 
+        onclick="eliminarDelCarrito('${producto}')" 
+        class="text-red-500 hover:text-red-700 bg-red-50 rounded-full p-2 
+               transition-all duration-200 hover:bg-red-100 
+               focus:outline-none focus:ring-2 focus:ring-red-300"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+`;
+        
+        listaCarrito.appendChild(li);
+        total += precio * cantidad;
+      });
+
+      // Mostrar total
+      totalCarrito.textContent = `Total: $${total.toFixed(2)}`;
+
+      // Guardar en localStorage
+      guardarCarrito();
+    }
+
+    // Nueva función para eliminar un producto específico
+    function eliminarDelCarrito(producto) {
+      if (carrito[producto]) {
+        if (carrito[producto].cantidad > 1) {
+          carrito[producto].cantidad -= 1;
+        } else {
+          delete carrito[producto];
+        }
+        
+        // Actualizar la vista del carrito
+        actualizarCarrito();
+      }
+    }
+
+    // Función para convertir a COP
+    async function convertirACOP() {
+      const totalCarrito = Object.values(carrito).reduce(
+        (sum, item) => sum + item.precio * item.cantidad,
+        0
+      );
+
+      try {
+        // Llamada a la API para obtener la tasa de conversión
+        const respuesta = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const datos = await respuesta.json();
+        const tasaCOP = datos.rates.COP;
+
+        // Calcular el total en COP y redondear al número entero
+        const totalEnCOP = Math.round(totalCarrito * tasaCOP);
+
+        // Formatear el número con separadores de miles
+        const totalFormateado = totalEnCOP.toLocaleString('es-CO');
+
+        // Mostrar el resultado en la página con "pesos"
+        const conversionResultado = document.getElementById('conversionResultado');
+        conversionResultado.textContent = `Total en COP: ${totalFormateado} pesos`;
+      } catch (error) {
+        console.error('Error al convertir a COP:', error);
+        alert('Hubo un problema al obtener la tasa de cambio. Intenta de nuevo más tarde.');
+      }
+    }
+
+    // Función placeholder para comprar (puedes implementarla más adelante)
+    function comprarCarrito() {
+      alert('Funcionalidad de compra próximamente');
+    }
+
+    // Cargar carrito al iniciar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      actualizarCarrito();
+    });
+  </script>
+</body>
+</html>
